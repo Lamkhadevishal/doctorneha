@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block title %}Chatbot{% endblock %}
+
+{% block content %}
+<style>
+  body, html {
+    height: 100%;
+    background: #0a1f44;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  h2 {
+    color: #fff;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+  }
+  .btn-outline-danger {
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .chat-card {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 140px);
+    max-height: 600px;
+    background: #12294b;
+    border-radius: 16px;
+    box-shadow: 0 0 20px #0e4aff;
+    overflow: hidden;
+  }
+  #chatbox {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #0e2a6a;
+    scrollbar-width: thin;
+  }
+  #chatbox::-webkit-scrollbar {
+    width: 6px;
+  }
+  #chatbox::-webkit-scrollbar-thumb {
+    background: #1e90ff;
+    border-radius: 3px;
+  }
+  .user-bubble {
+    background: linear-gradient(90deg, #00bfff, #1e90ff);
+    color: #fff;
+    padding: 0.8rem 1rem;
+    border-radius: 14px 14px 0 14px;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+    max-width: 75%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+  }
+  .bot-bubble {
+    background: #1b3b6f;
+    color: #e0e7ff;
+    padding: 0.8rem 1rem;
+    border-radius: 14px 14px 14px 0;
+    box-shadow: 0 0 10px rgba(30, 144, 255, 0.4);
+    max-width: 75%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+  }
+  small {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    color: #a3c0ff;
+    text-align: right;
+  }
+  #chat-form {
+    display: flex;
+    border-top: 1.5px solid #0e4aff;
+    padding: 0.8rem;
+    background: #12294b;
+    gap: 0.5rem;
+  }
+  #user-input {
+    background: #0e2a6a;
+    border: 1.5px solid #0e4aff;
+    color: #cbd5f7;
+    border-radius: 10px;
+    padding: 0.7rem;
+    flex: 1;
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+  }
+  #user-input:focus {
+    border-color: #3e7fff;
+    box-shadow: 0 0 8px #3e7fff;
+    background: #12294b;
+    color: #e0e7ff;
+    outline: none;
+  }
+  .btn-primary {
+    background: linear-gradient(90deg, #00bfff, #1e90ff);
+    border: none;
+    font-weight: 700;
+    padding: 0.7rem 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #1e90ff;
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(90deg, #1e90ff, #00bfff);
+    box-shadow: 0 0 20px #3ea0ff;
+  }
+  @media (max-width: 480px) {
+    .chat-card {
+      height: calc(100vh - 120px);
+    }
+    .user-bubble, .bot-bubble {
+      max-width: 85%;
+    }
+    #chat-form {
+      padding: 0.5rem;
+    }
+  }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Welcome, Doctor Neha</h2>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+</div>
+
+<div class="chat-card">
+    <div id="chatbox"></div>
+    <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off" required />
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+</div>
+
+<script>
+    const chatbox = document.getElementById('chatbox');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('user-input');
+
+    function getTime() {
+        const now = new Date();
+        return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+
+    function addMessage(message, fromUser = true) {
+        const wrapper = document.createElement('div');
+        wrapper.className = fromUser ? 'd-flex justify-content-end mb-3' : 'd-flex justify-content-start mb-3';
+
+        const bubble = document.createElement('div');
+        bubble.className = fromUser ? 'user-bubble' : 'bot-bubble';
+        bubble.textContent = message;
+
+        const time = document.createElement('small');
+        time.textContent = getTime();
+
+        bubble.appendChild(time);
+        wrapper.appendChild(bubble);
+        chatbox.appendChild(wrapper);
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        input.value = '';
+        input.disabled = true;
+
+        try {
+            // Show "Doctor Neha is thinking..." before response
+            const thinkingMessage = document.createElement('div');
+            thinkingMessage.className = 'bot-bubble';
+            thinkingMessage.textContent = 'Doctor Neha is thinking...';
+            const time = document.createElement('small');
+            time.textContent = getTime();
+            thinkingMessage.appendChild(time);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'd-flex justify-content-start mb-3';
+            wrapper.appendChild(thinkingMessage);
+            chatbox.appendChild(wrapper);
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await res.json();
+            wrapper.remove(); // Remove thinking bubble
+
+            if (res.ok) {
+                addMessage(data.response, false);
+            } else {
+                addMessage("⚠️ Error: " + data.error, false);
+            }
+        } catch (err) {
+            addMessage("⚠️ Error connecting to server", false);
+        } finally {
+            input.disabled = false;
+            input.focus();
+        }
+    });
+
+    input.focus();
+</script>
+{% endblock %}

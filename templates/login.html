@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<style>
+  body, html {
+    height: 100%;
+    background: #0a1f44;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  .login-container {
+    width: 92%;
+    max-width: 380px;
+    margin: 6vh auto;
+    padding: 1.8rem;
+    background: #12294b;
+    border-radius: 16px;
+    box-shadow: 0 0 20px #0e4aff;
+  }
+  .login-container h2 {
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    text-align: center;
+    font-size: 1.4rem;
+    line-height: 1.5;
+  }
+  .form-label {
+    color: #a3c0ff;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .form-control {
+    background: #0e2a6a;
+    border: 1.5px solid #0e4aff;
+    color: #cbd5f7;
+    border-radius: 10px;
+    transition: border-color 0.3s ease;
+    padding: 0.85rem;
+    font-size: 1rem;
+  }
+  .form-control:focus {
+    border-color: #3e7fff;
+    box-shadow: 0 0 8px #3e7fff;
+    background: #12294b;
+    color: #e0e7ff;
+  }
+  .btn-primary {
+    background: linear-gradient(90deg, #00bfff, #1e90ff);
+    border: none;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    padding: 0.9rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #1e90ff;
+    width: 100%;
+    transition: background 0.3s ease;
+    font-size: 1.05rem;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(90deg, #1e90ff, #00bfff);
+    box-shadow: 0 0 20px #3ea0ff;
+  }
+  .alert-danger {
+    background-color: #721c24;
+    color: #f8d7da;
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border: none;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  .robot-icon-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .loading-message {
+    text-align: center;
+    color: #a3c0ff;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 1.5rem;
+      margin-top: 4vh;
+    }
+    .login-container h2 {
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+    .form-control {
+      font-size: 1rem;
+      padding: 0.85rem;
+    }
+    .btn-primary {
+      font-size: 1rem;
+      padding: 0.85rem;
+    }
+    lottie-player {
+      width: 80px !important;
+      height: 80px !important;
+    }
+    .loading-message {
+      font-size: 0.85rem;
+    }
+  }
+</style>
+
+<!-- Lottie Player script -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+<div class="login-container shadow-lg">
+  <div class="robot-icon-container">
+    <lottie-player
+      src="https://assets9.lottiefiles.com/packages/lf20_j1adxtyb.json"
+      background="transparent"
+      speed="1"
+      style="width: 100px; height: 100px; margin: 0 auto;"
+      loop
+      autoplay
+    ></lottie-player>
+  </div>
+
+  <h2>Hello Doctor Neha.
+    please login to continue</h2>
+  
+  {% if error %}
+  <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+  
+  <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+    <div class="mb-4">
+      <label for="username" class="form-label">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        name="username"
+        id="username"
+        placeholder="Enter your username"
+        required
+        autofocus
+      />
+    </div>
+    <div class="mb-4">
+      <label for="password" class="form-label">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        name="password"
+        id="password"
+        placeholder="Enter your password"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary" id="loginBtn">Log In</button>
+    <div class="loading-message" id="loadingMessage">🔄 Logging in, please wait...</div>
+  </form>
+</div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function() {
+    // Disable button to prevent double-click
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Please wait...';
+
+    // Show the loading message after 0.5 seconds
+    setTimeout(function() {
+      document.getElementById('loadingMessage').style.display = 'block';
+    }, 5000);
+  });
+</script>
+{% endblock %}
