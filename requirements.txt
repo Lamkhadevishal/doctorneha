@@ -13,3 +13,5 @@ PyPDF2
 tiktoken
 torch
 transformers
+flask
+
