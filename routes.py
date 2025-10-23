@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from core.ragpipeline import RAGPipeline
+import os
 
 
 app = Flask(__name__)
@@ -9,8 +10,9 @@ app.secret_key = 'your_secret_key_here'
 USER_DATA = {
     'Dr neha': 'neha123',
 }
-rag = RAGPipeline(doc_path='data/doctorneha.pdf')
-
+rag = None  # globally
+if rag is None:
+    rag = RAGPipeline(doc_path='data/doctorneha.pdf')
 @app.route('/')
 def home():
     if 'username' in session:
@@ -69,5 +71,5 @@ def ping():
 
 if __name__ == '__main__':
     import os
-    port = int(os.environ.get('PORT', 10000))  # Render provides this dynamically
+    port = int(os.environ.get('PORT', 5000))  # Render provides this dynamically
     app.run(host='0.0.0.0', port=port)

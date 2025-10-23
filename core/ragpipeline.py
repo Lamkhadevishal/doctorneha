@@ -57,7 +57,7 @@ class RAGPipeline:
         docs = loader.load()
         print(f" Loaded {len(docs)} pages from PDF.")
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
         split_docs = splitter.split_documents(docs)
         print(f"Split into {len(split_docs)} chunks.")
 
