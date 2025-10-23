@@ -60,6 +60,12 @@ def chat_api():
         return jsonify({"response": response})
     except Exception as e:
         return jsonify({"error": f"Chatbot error: {str(e)}"}), 500
+    
+
+@app.route('/ping')
+def ping():
+    return "pong", 200
+
 
 if __name__ == '__main__':
     import os
