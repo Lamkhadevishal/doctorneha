@@ -4,7 +4,7 @@ import sys
 import os
 
 
-# Typing and thinking animations
+
 def thinking_animation(message="👩‍⚕️ Doctor Neha is thinking", delay=0.4, dots=3):
     sys.stdout.write(message)
     sys.stdout.flush()
@@ -31,27 +31,27 @@ def chat():
     while True:
         question = input("\n🎓 You: ").strip().lower()
         
-        # Exit condition
+        
         if question in ["exit", "quit"]:
             print("👋 Goodbye! Have a healthy day ahead.")
             break
 
-        # Reset memory
+        
         elif question == "reset":
             path = f"history/{session_id}.json"
             if os.path.exists(path):
                 os.remove(path)
-                print("🧠 Memory cleared! Starting fresh...")
+                print("Memory cleared! Starting fresh...")
             else:
                 print("🧹 No memory found to reset.")
             continue
 
-        # Greet on "hi" or "hello"
+       
         elif question in ["hi", "hello", "hii", "hey"]:
             print("👩‍⚕️ Doctor Neha: Hi, myself Doctor Neha — a physiotherapist. How can I help you today?")
             continue
 
-        # Default response from RAG
+        
         thinking_animation()
         response = assistant.ask(question, session_id=session_id)
         print("\n👩‍⚕️ Doctor Neha:\n")

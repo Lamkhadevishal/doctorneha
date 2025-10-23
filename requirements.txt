@@ -1,0 +1,15 @@
+langchain
+langchain-core
+langchain-community
+langchain-groq
+langchain-huggingface
+langchain-text-splitters
+faiss-cpu
+huggingface-hub
+sentence-transformers
+python-dotenv
+configparser
+PyPDF2
+tiktoken
+torch
+transformers

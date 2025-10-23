@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from core.ragpipeline import RAGPipeline
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Change this in production!
 
-# Dummy user store
+app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'  
+
+
 USER_DATA = {
     'Dr neha': 'neha123',
 }
@@ -43,7 +44,7 @@ def chatbot():
 
     return render_template('chatbot.html', username=session['username'])
 
-# Example API endpoint for chatbot response (replace with your RAG logic)
+
 @app.route('/api/chat', methods=['POST'])
 def chat_api():
     if 'username' not in session:
@@ -54,7 +55,7 @@ def chat_api():
         return jsonify({"error": "No message provided"}), 400
 
     try:
-        # Pass the current username as session_id for personalized chat history
+       
         response = rag.ask(question=user_message, session_id=session['username'])
         return jsonify({"response": response})
     except Exception as e:

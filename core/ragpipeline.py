@@ -14,6 +14,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.runnables import RunnableWithMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import FileChatMessageHistory
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class RAGPipeline:
@@ -22,17 +24,17 @@ class RAGPipeline:
         self.vectorstore_dir = "vectorstores/doctorneha_faiss"
         self._load_config()
         self._init_embeddings_and_vectorstore(doc_path)
-        self._init_llm_and_chain_with_memory()  # changed method name
-
+        self._init_llm_and_chain_with_memory()  
+    
     def _load_config(self):
         config = configparser.ConfigParser()
         config.read("./config/local-config.ini")
 
         try:
-            self.api_key = "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"
-            self.embedding_model_name = "sentence-transformers/paraphrase-MiniLM-L6-v2"
-            self.model_name = "llama3-70b-8192"
-            self.temperature = 0.7
+            self.api_key =os.getenv("api_key")
+            self.embedding_model_name = os.getenv("embeding_model")
+            self.model_name = os.getenv("model_name")
+            self.temperature = os.getenv("temperature")
         except KeyError as e:
             raise ValueError(f"Missing key in config: {e}")
 
@@ -40,32 +42,32 @@ class RAGPipeline:
         embedding_model = HuggingFaceEmbeddings(model_name=self.embedding_model_name)
 
         if os.path.exists(os.path.join(self.vectorstore_dir, "index.faiss")):
-            print("✅ Loading existing FAISS vectorstore...")
+            print(" Loading existing FAISS vectorstore...")
             self.vectorstore = FAISS.load_local(
                 folder_path=self.vectorstore_dir,
                 embeddings=embedding_model,
-                allow_dangerous_deserialization=True  # ✅ safe because you created it
+                allow_dangerous_deserialization=True 
             )
             return
 
         abs_path = os.path.abspath(doc_path)
-        print("📄 Looking for PDF at:", abs_path)
+        print(" Looking for PDF at:", abs_path)
 
         if not os.path.isfile(abs_path):
-            raise ValueError(f"❌ PDF file not found at: {abs_path}")
+            raise ValueError(f" PDF file not found at: {abs_path}")
 
         loader = PyPDFLoader(abs_path)
         docs = loader.load()
-        print(f"✅ Loaded {len(docs)} pages from PDF.")
+        print(f" Loaded {len(docs)} pages from PDF.")
 
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
         split_docs = splitter.split_documents(docs)
-        print(f"🧩 Split into {len(split_docs)} chunks.")
+        print(f"Split into {len(split_docs)} chunks.")
 
         self.vectorstore = FAISS.from_documents(split_docs, embedding_model)
 
         self.vectorstore.save_local(self.vectorstore_dir)
-        print("💾 Saved FAISS vectorstore for future use.")
+        print("Saved FAISS vectorstore for future use.")
 
     def _init_llm_and_chain_with_memory(self):
         llm = ChatGroq(
@@ -86,7 +88,7 @@ class RAGPipeline:
     "Sorry, I don't have enough information on that topic yet, but I'm still learning!"
 
 
-    Use the context to give a clear, detailed explanation.
+    Use the context to give a clear,and short explanation.
 
     If context lacks info, say:
     "Sorry, I don't have enough information on that topic yet, but I'm still learning!"
@@ -110,14 +112,11 @@ class RAGPipeline:
             }
 
         chain = (
-            RunnableLambda(format_input)
-            | prompt
-            | llm
-            | StrOutputParser()
+            RunnableLambda(format_input)| prompt| llm|StrOutputParser()
         )
 
         history_dir = "history"
-        os.makedirs(history_dir, exist_ok=True)  # ✅ Create the folder if it doesn't exist
+        os.makedirs(history_dir, exist_ok=True)  
 
         self.rag_chain = RunnableWithMessageHistory(
         chain,
@@ -131,23 +130,19 @@ class RAGPipeline:
     def ask(self, question: str, k: int = 8, session_id: str = "default") -> str:
         lower_question = question.strip().lower()
 
-        # Greeting logic (whole word match)
         greetings = ["hi", "hello", "hey", "hii"]
         if any(re.search(rf"\b{greet}\b", lower_question) for greet in greetings):
             return (
-                "👋 Hello! I’m Doctor Neha — your friendly AI physiotherapist.\n\n"
-                "✨ I was lovingly created by your childhood buddy **Vishal Lamkhade** as a gift of **Rakshabandhan**.\n\n"
+                "Hello Boss! I’m Doctor Neha .your friendly AI physiotherapist.\n"
                 "How can I help you today?"
             )
 
-        # Farewell logic (whole word match)
+        
         farewells = ["bye", "goodbye", "see you", "thank you", "thanks"]
         if any(re.search(rf"\b{farewell}\b", lower_question) for farewell in farewells):
             return (
-                "Yes Neha bye💙 Take care of your self — it's the only place you have to live.\n"
-                "Stay strong, stay curious, and never stop learning.\n"
-                "I'm always here whenever you need help.\n"
-                "Until next time — stay healthy and happy! 🌿"
+               "Bye 👋 Boss!!"
+            
             )
 
         # RAG-based answer
