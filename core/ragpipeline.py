@@ -1,18 +1,15 @@
 import configparser
 import re
 import os
-from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableLambda,RunnablePassthrough
-from langchain.schema.runnable import Runnable
+from langchain_core.runnables import RunnableLambda
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.runnables import RunnableWithMessageHistory
-from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import FileChatMessageHistory
 from dotenv import load_dotenv
 load_dotenv()
