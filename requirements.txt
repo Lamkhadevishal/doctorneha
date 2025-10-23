@@ -25,3 +25,6 @@ tiktoken>=0.7.0
 # Optional but recommended
 numpy>=1.26.0
 requests>=2.31.0
+
+#web framework
+flask>=3.0.0
