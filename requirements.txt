@@ -1,17 +1,27 @@
-langchain
-langchain-core
-langchain-community
-langchain-groq
-langchain-huggingface
-langchain-text-splitters
-faiss-cpu
-huggingface-hub
-sentence-transformers
-python-dotenv
-configparser
-PyPDF2
-tiktoken
-torch
-transformers
-flask
+# Core LangChain ecosystem
+langchain>=0.2.11
+langchain-core>=0.2.5
+langchain-community>=0.2.5
+langchain-huggingface>=0.0.3
+langchain-groq>=0.0.2
+langchain-text-splitters>=0.0.2
 
+# Vector database
+faiss-cpu>=1.8.0
+
+# Embeddings and model dependencies
+transformers>=4.44.0
+sentence-transformers>=2.2.2
+torch>=2.1.0
+
+# PDF loading
+pypdf>=4.0.0
+
+# Utilities
+python-dotenv>=1.0.1
+configparser>=6.0.0
+tiktoken>=0.7.0
+
+# Optional but recommended
+numpy>=1.26.0
+requests>=2.31.0
