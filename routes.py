@@ -10,7 +10,7 @@ app.secret_key = 'your_secret_key_here'
 USER_DATA = {
     'Dr neha': 'neha123',
 }
-rag = None  # globally
+rag = None  
 if rag is None:
     rag = RAGPipeline(doc_path='data/doctorneha.pdf')
 @app.route('/')
@@ -64,12 +64,6 @@ def chat_api():
         return jsonify({"error": f"Chatbot error: {str(e)}"}), 500
     
 
-@app.route('/ping')
-def ping():
-    return "pong", 200
 
 
-if __name__ == '__main__':
-    import os
-    port = int(os.environ.get('PORT', 5000))  # Render provides this dynamically
-    app.run(host='0.0.0.0', port=port)
+
